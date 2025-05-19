@@ -1,5 +1,23 @@
 #include "../Model/EmpleadoCRUD.h"
 #include <iostream>
+#include <algorithm>
+#include <cctype>
+#include <regex>
+
+// Validacion del formato del DUI 
+bool validarDUI(const std::string& dui) {
+    std::regex pattern("^\\d{8}-\\d$");
+    return std::regex_match(dui, pattern);
+}
+
+
+//Funcion para convertir a minusculas en los estados para evitar errores y estandarizar el texto
+std::string toMinusculas(const std::string& s) {
+    std::string copia = s;
+    std::transform(copia.begin(), copia.end(), copia.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+    return copia;
+}
 
 void mostrarMenu() {
     std::cout << "===== CRUD EMPLEADOS =====\n";
@@ -13,12 +31,50 @@ void mostrarMenu() {
 
 Empleado capturarEmpleado() {
     std::string c, n, d, dept, car, est;
-    std::cout << "Codigo: "; std::getline(std::cin, c);
-    std::cout << "Nombre completo: "; std::getline(std::cin, n);
-    std::cout << "DUI: "; std::getline(std::cin, d);
-    std::cout << "Departamento: "; std::getline(std::cin, dept);
-    std::cout << "Cargo: "; std::getline(std::cin, car);
-    std::cout << "Estado (Activo/Inactivo): "; std::getline(std::cin, est);
+
+    do {
+        std::cout << "Codigo: ";
+        std::getline(std::cin, c);
+        if (c.empty()) std::cout << "El codigo no puede estar vacio.\n";
+    } while (c.empty());
+
+    do {
+        std::cout << "Nombre completo: ";
+        std::getline(std::cin, n);
+        if (n.empty()) std::cout << "El nombre no puede estar vacio.\n";
+    } while (n.empty());
+
+    do {
+        std::cout << "DUI (formato 12345678-9): ";
+        std::getline(std::cin, d);
+        if (!validarDUI(d)) std::cout << "Formato de DUI invalido.\n";
+    } while (!validarDUI(d));
+
+    do {
+        std::cout << "Departamento: ";
+        std::getline(std::cin, dept);
+        if (dept.empty()) std::cout << "El departamento no puede estar vacio.\n";
+    } while (dept.empty());
+
+    do {
+        std::cout << "Cargo: ";
+        std::getline(std::cin, car);
+        if (car.empty()) std::cout << "El cargo no puede estar vacio.\n";
+    } while (car.empty());
+
+    do {
+        std::cout << "Estado (Activo/Inactivo): ";
+        std::getline(std::cin, est);
+        std::string eMin = toMinusculas(est);
+        if (eMin != "activo" && eMin != "inactivo") {
+            std::cout << "Estado invalido.\n";
+        } else {
+            est = eMin;
+            est[0] = std::toupper(est[0]);
+            break;
+        }
+    } while (true);
+
     return Empleado(c, n, d, dept, car, est);
 }
 
@@ -30,7 +86,7 @@ int main() {
     do {
         mostrarMenu();
         std::cin >> opcion;
-        std::cin.ignore(); // Limpiar buffer
+        std::cin.ignore();
 
         switch (opcion) {
             case 1: {

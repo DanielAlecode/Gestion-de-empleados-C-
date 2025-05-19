@@ -1,1 +1,2 @@
-32432,Daniel,3247298374,Software Saas,Fullstack,Activo
+
+2323123,Daniel Alexis Ramirez,12345678-9,Application Development,SaaS Developer,Activo
